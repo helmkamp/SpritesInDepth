@@ -9,6 +9,8 @@
 #import "GameLayer.h"
 #import "Bullet.h"
 #import "Ship.h"
+#import "ParallaxBackground.h"
+
 
 
 @implementation GameLayer
@@ -21,7 +23,7 @@ static GameLayer *sharedGameLayer;
 }
 
 +(id)scene {
-    CCScene scene = [CCScene node];
+    CCScene *scene = [CCScene node];
     GameLayer *layer = [GameLayer node];
     [scene addChild:layer];
     return scene;
@@ -31,7 +33,19 @@ static GameLayer *sharedGameLayer;
     if ((self = [super init])) {
         sharedGameLayer = self;
         
-        //Add the batch node
+        //Make sure the screen isn't shining through
+        glClearColor(1, 1, 1, 1);
+        
+        //load the artwork upfront
+        CCSpriteFrameCache* frameCache = [CCSpriteFrameCache sharedSpriteFrameCache];
+        [frameCache addSpriteFramesWithFile:@"game-art.plist"];
+        
+        CGSize screenSize = [CCDirector sharedDirector].winSize;
+        
+        ParallaxBackground* background = [ParallaxBackground node];
+        [self addChild:background z:-1];
+        
+/*        //Add the batch node
         CCSpriteBatchNode *batch = [CCSpriteBatchNode batchNodeWithFile:@"bullet.png"];
         [self addChild:batch z:1 tag:GameSceneNodeTagBulletSpriteBatch];
         
@@ -40,7 +54,7 @@ static GameLayer *sharedGameLayer;
             Bullet* bullet = [Bullet bullet];
             bullet.visible = NO;
             [batch addChild:bullet];
-        }
+        } */
     }
     return self;
 }
@@ -50,18 +64,20 @@ static GameLayer *sharedGameLayer;
 }
 
 -(CCSpriteBatchNode*) bulletSpriteBatch {
-    CCNode* = [self getChildByTag:GameSceneNodeTagBulletSpriteBatch];
+    CCNode* node = [self getChildByTag:GameSceneNodeTagBulletSpriteBatch];
     NSAssert([node isKindOfClass:[CCSpriteBatchNode class]], @"not a SpriteBatch");
     return (CCSpriteBatchNode*)node;
 }
 
--(void) update:(ccTime)delta {
-    Bullet *bullet = [Bullet bulletWithShip:self];
-    [[[GameLayer sharedGameLayer] bulletSpriteBatch] addChild:bullet z:0 tag:GameSceneNodeTagBullet];
-}
+//-(void) update:(ccTime)delta {
+//    Bullet *bullet = [Bullet bulletWithShip:self];
+//    [[[GameLayer sharedGameLayer] bulletSpriteBatch] addChild:bullet z:0 tag:GameSceneNodeTagBullet];
+//}
 
 -(void)shootBulletFromShip:(Ship *)ship {
     CCArray* bullets = [self.bulletSpriteBatch children];
+    
+    CCNode* node = [bullets objectAtIndex:nextInactiveBullet];
     NSAssert([node isKindOfClass:[Bullet class]], @"not a bullet!");
     
     Bullet* bullet = (Bullet*)node;

@@ -7,11 +7,34 @@
 //
 
 #import "Bullet.h"
+#import "Ship.h"
+
+
+@interface Bullet (PrivateMethods)
+-(id)initWithShip:(Ship*)ship;
+-(id)initWithBulletImage;
+@end
+
 
 
 @implementation Bullet
 
--(void) shootBulletFromShip:(Ship *)ship {
+@synthesize velocity;
+
+
++(id) bullet {
+    return [[self alloc] initWithBulletImage];
+}
+
+-(id) initWithBulletImage {
+    if ((self = [super initWithSpriteFrameName:@"bullet.png"])) {
+        
+    }
+    return self;
+}
+
+
+-(void) shootBulletFromShip:(Ship*)ship {
     float spread = (CCRANDOM_0_1() - 0.5f) * 0.5f;
     velocity = CGPointMake(1, spread);
     
@@ -19,7 +42,7 @@
     self.position = CGPointMake(ship.position.x + ship.contentSize.width * 0.5f, ship.position.y);
     self.visible = YES;
     
-    [self scheduleUpdate];
+    //[self scheduleUpdate];
 }
 
 -(void) update:(ccTime)delta {
@@ -30,7 +53,8 @@
     
     //delete the bullet if it leaves the screen
     if (self.position.x > outsideScreen) {
-        [self removeFromParentAndCleanup:YES];
+        self.visible = NO;
+       // [self unscheduleUpdate];
     }
 }
 

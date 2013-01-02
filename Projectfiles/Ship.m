@@ -13,12 +13,22 @@
 
 @implementation Ship
 
++(id)ship {
+    return [[self alloc] initWithShipImage];
+}
 
 -(id) initWithShipImage {
-    if ((self = [super initWithFile:@"ship.png"])) {
+    if ((self = [super initWithSpriteFrameName:@"ship.png"])) {
         
+        NSString* shipAnimName = @"ship-anim";
+        CCAnimation* anim = [CCAnimation animationWithFrames:shipAnimName frameCount:5 delay:0.08f];
         
+        //run the animation
+        CCAnimate* animate = [CCAnimate actionWithAnimation:anim];
+        CCRepeatForever* repeat = [CCRepeatForever actionWithAction:animate];
+        [self runAction:repeat];
         
+        //call update for every frame
         [self scheduleUpdate];
     }
     return self;
@@ -26,12 +36,8 @@
 
 
 -(void) update:(ccTime)delta {
-    //keep creating new bullets
-    Bullet *bullet = [Bullet bulletWithShip:self];
-    
-    //Add the bullets to the ship's parent
-    CCNode *gameScene = [self parent];
-    [gameScene addChild:bullet z:0 tag:GameSceneNodeTagBullet];
+    //shooting is relayed to the Game scene
+    [[GameLayer sharedGameLayer] shootBulletFromShip:self];
 }
 
 
