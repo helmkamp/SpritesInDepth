@@ -9,10 +9,20 @@
 #import <Foundation/Foundation.h>
 #import "cocos2d.h"
 
+@class Ship;
+
+typedef enum {
+    GameSceneNodeTagBullet = 1,
+    GameSceneNodeTagBulletSpriteBatch,
+} GameSceneNodeTags;
+
 @interface GameLayer : CCLayer {
-    
+    NSUInteger nextInactiveBullet;
 }
 
 +(id)scene;
++(GameLayer*) sharedGameLayer;
+-(CCSpriteBatchNode*) bulletSpriteBatch;
+-(void) shootBulletFromShip:(Ship*)ship;
 
 @end

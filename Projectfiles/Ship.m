@@ -16,6 +16,9 @@
 
 -(id) initWithShipImage {
     if ((self = [super initWithFile:@"ship.png"])) {
+        
+        
+        
         [self scheduleUpdate];
     }
     return self;
